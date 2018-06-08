@@ -32,7 +32,7 @@ class MultinomialNB(NaiveBayes):
         labelled_x = [x[ci].T for ci in labels]
         # 更新模型的各个属性
         self._x, self._y = x, y
-        self._labeled_x, self._label_zip = labelled_x, list(zip(labels, labelled_x))
+        self._labelled_x, self._label_zip = labelled_x, list(zip(labels, labelled_x))
         (self._cat_counter, self._feat_dics, self._n_possibilities) = (cat_counter, feat_dics, n_possibilities)
         self.label_dic = {i: _l for _l, i in label_dics.items()}
         # 调用处理样本权重的函数，以便更新记录条件概率的数组
@@ -44,7 +44,7 @@ class MultinomialNB(NaiveBayes):
         # 利用numpy的bincount方法获取带权重条件的概率的极大似然估计
         for dim, _p in enumerate(self._n_possibilities):
             if sample_weight is None:
-                self._con_counter.append([np.bincount(xx[dim], minlength=_p) for xx in self._labeled_x])
+                self._con_counter.append([np.bincount(xx[dim], minlength=_p) for xx in self._labelled_x])
             else:
                 self._con_counter.append(
                     [np.bincount(xx[dim], weights=sample_weight[label] / sample_weight[label].mean(), minlength=_p) for
@@ -90,11 +90,11 @@ if __name__ == '__main__':
     from Util import DataUtil
 
     # 遍历1.0,1.5两个版本的气球数据
-    for dataset in ('balloon1.0', 'balloon1.5'):
-    #for dataset in ['mushroom']:
+    #for dataset in ('balloon1.0', 'balloon1.5'):
+    for dataset in ['mushroom']:
         # 读取数据
-        _x, _y = DataUtil.get_dataset(dataset, '{}.txt'.format(dataset))
-        #_x, _y = DataUtil.get_dataset(dataset, '{}.txt'.format(dataset), tar_ind=0)
+        #_x, _y = DataUtil.get_dataset(dataset, '{}.txt'.format(dataset))
+        _x, _y = DataUtil.get_dataset(dataset, '{}.txt'.format(dataset), tar_ind=0)
         # 实例化模型并进行训练，同时记录过程发生的时间
         learning_time = time.time()
         nb = MultinomialNB()

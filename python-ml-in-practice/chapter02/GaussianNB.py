@@ -2,7 +2,6 @@
 from math import pi, exp
 
 import numpy as np
-
 from Basic import NaiveBayes
 
 # 记录 根号2pi，避免重复计算
@@ -14,6 +13,14 @@ class NBFunctions:
     @staticmethod
     def gaussian(x, mu, sigma):
         return exp(-(x - mu) ** 2 / (2 * sigma ** 2)) / (sqrt_pi * sigma)
+
+    #批量处理
+    @staticmethod
+    def gaussian_batch(xx,mu,sigma):
+        yy = []
+        for x in xx:
+            yy.append(exp(-(x - mu) ** 2 / (2 * sigma ** 2)) / (sqrt_pi * sigma))
+        return yy
 
     # 定义进行极大似然估计的函数
     # 返回一个存储着计算条件概率密度函数的列表
@@ -49,8 +56,8 @@ class GaussianNB(NaiveBayes):
         # 更新模型的各个属性
         self._x, self._y = x.T, y
         self._labelled_x, self._label_zip = labelled_x, labels
-        self._cat_counter, self._label_dic = cat_conter, [i:_l
-        for _l, i in label_dic.items()]
+        self._cat_counter = cat_conter
+        self._label_dic = [{i: _l} for _l, i in label_dic.items()]
         self.feed_sample_weight(sample_weight)
 
     # 定义处理样本权重的函数
@@ -75,8 +82,9 @@ class GaussianNB(NaiveBayes):
                 # 由于data中存储的事函数，所有需要调用他来进行条件概率的计算
                 rs *= data[d][tar_category](xx)
             return rs * p_catefory[tar_category]
+
         return func
 
     @staticmethod
-    def _transfer_x(self,x):
+    def _transfer_x(self, x):
         return x
